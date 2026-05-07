@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross-National Crime and Prison Population Indicators Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{box-sizing:border-box}
+:root{--ink:#102947;--muted:#57687a;--line:#d7e0e8;--card:#ffffff;--accent:#1f567d;}
+body{margin:0;padding:22px;background:linear-gradient(180deg,#ffffff 0%,#f5f9fb 100%);color:var(--ink);font-family:Palatino, "Palatino Linotype", Georgia, serif;}
+.container{max-width:1320px;margin:0 auto}
+.header,.controls,.map-card,.side-card,.table-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(16,41,71,.06)}
+.header{padding:22px 24px;margin-bottom:16px}
+.kicker{font-family:Optima, Candara, Arial, sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-size:12px;margin-bottom:8px}
+h1{margin:0 0 10px;font-family:Optima, Candara, Arial, sans-serif;text-transform:uppercase;letter-spacing:.08em;font-weight:400;font-size:30px;line-height:1.15}
+.subtitle{margin:0;line-height:1.55;color:#27405a;font-size:16px;max-width:1000px}
+.controls{padding:16px;margin-bottom:16px}
+.controls h2,.side-card h2,.table-card h2{margin:0 0 12px;font-family:Optima, Candara, Arial, sans-serif;font-size:18px;letter-spacing:.14em;text-transform:uppercase;font-weight:400}
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:16px}
+.ctrl-group label{display:block;margin-bottom:6px;font-family:Optima, Candara, Arial, sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.ctrl-btn{border:1px solid #bfd0de;border-radius:999px;background:#fff;padding:9px 13px;cursor:pointer;font-family:Optima, Candara, Arial, sans-serif;font-size:13px;color:var(--ink)}
+.ctrl-btn.active{background:#13496f;color:#fff;border-color:#13496f}
+select{width:100%;border:1px solid #bfd0de;border-radius:10px;background:#fff;padding:10px;font-size:15px;font-family:Palatino, Georgia, serif;color:var(--ink)}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+.map-card{padding:12px}
+#map{height:720px;border-radius:10px;overflow:hidden}
+.side-card{padding:16px}
+.metric{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.metric-label{font-family:Optima, Candara, Arial, sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-size:12px;margin-bottom:4px}
+.metric-value{font-size:17px;font-weight:700;line-height:1.35}
+.note{font-size:13px;line-height:1.5;color:var(--muted);margin-top:10px}
+.legend {background:#fff;padding:10px 12px;border:1px solid var(--line);border-radius:10px;line-height:1.3;color:var(--ink);box-shadow:0 2px 8px rgba(16,41,71,.08)}
+.legend-title {font-family:Optima, Candara, Arial, sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:11px;margin-bottom:8px}
+.legend-bar {width:150px;height:12px;background: linear-gradient(to right, #deebf7, #9ecae1, #3182bd, #08519c);border-radius:4px;border:1px solid #c8d2dd;}
+.legend-labels {display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.table-card{padding:16px;margin-top:16px;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+th{background:#f4f8fb;font-family:Optima, Candara, Arial, sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.leaflet-popup-content-wrapper{border-radius:10px}
+@media (max-width: 1000px) {
+  body{padding:14px}
+  .ctrl-grid,.main-grid{grid-template-columns:1fr}
+  #map{height:620px}
+  h1{font-size:26px}
+}
+
+.download-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:10px;
+  padding:10px 16px;
+  border-radius:999px;
+  background:#13496f;
+  color:#fff;
+  text-decoration:none;
+  font-family:Optima, Candara, Arial, sans-serif;
+  font-size:13px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  border:1px solid #13496f;
+}
+.download-btn:hover{background:#0e3858}
+.source-note{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 8px}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <section class="header">
+    <div class="kicker">Eurostat Crime and Criminal Justice Data</div>
+    <h1>Cross-National Patterns in Crime and Prison Population Indicators</h1>
+    <p class="subtitle">
+      This interactive map visualizes cross-national crime and prison population indicators for eight European countries using data downloaded directly from Eurostat. 
+      Crime measures come from Eurostat’s <em>Police-recorded offences by offence category</em> dataset (<strong>crim_off_cat</strong>), and prison measures come from Eurostat’s <em>Prison capacity and number of persons held</em> dataset (<strong>crim_pris_cap</strong>). 
+      The map allows users to compare both raw-count values and Eurostat’s per-100,000 inhabitants rates across selected years and variables.
+    </p>
+  </section>
+
+  <section class="controls">
+    <h2>Map controls</h2>
+    <div class="ctrl-grid">
+      <div class="ctrl-group">
+        <label>Dataset</label>
+        <div class="btn-row" id="datasetBtns"></div>
+      </div>
+      <div class="ctrl-group">
+        <label>Year</label>
+        <div class="btn-row" id="yearBtns"></div>
+      </div>
+      <div class="ctrl-group">
+        <label>Variable</label>
+        <select id="variableSelect"></select>
+      </div>
+    </div>
+  </section>
+
+  <section class="main-grid">
+    <div class="map-card">
+      <div id="map"></div>
+    </div>
+
+    <aside class="side-card">
+      <h2>Selected view</h2>
+      <div class="metric">
+        <div class="metric-label">Dataset</div>
+        <div class="metric-value" id="panelDataset">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Variable</div>
+        <div class="metric-value" id="panelVariable">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Highest value</div>
+        <div class="metric-value" id="panelHigh">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Lowest value</div>
+        <div class="metric-value" id="panelLow">—</div>
+      </div>
+      <div class="note" id="sourcesNote"></div>
+    </aside>
+  </section>
+
+  <section class="table-card">
+    <h2>Country values in current view</h2>
+    <div id="valueTable"></div>
+  </section>
+
+  
+  <section class="table-card">
+    <h2>Downloadable Dataset</h2>
+    <p class="source-note">
+      Download the long-format dataset used to build this interactive map. The file includes dataset type, country, ISO code, year, variable, and value.
+    </p>
+    <a class="download-btn" download="lab4_leaflet_real_map_data.csv"
+       href="data:text/csv;base64,ZGF0YXNldCxjb3VudHJ5LGlzbzMseWVhcix2YXJpYWJsZSx2YWx1ZQpSYXcgY291bnRzLERlbm1hcmssRE5LLDIwMDgsSW50ZW50aW9uYWwgaG9taWNpZGUsNTMuMApSYXcgY291bnRzLERlbm1hcmssRE5LLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sMzQ1MS4wClJhdyBjb3VudHMsRGVubWFyayxETkssMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSw1My4wClJhdyBjb3VudHMsRGVubWFyayxETkssMjAyMyxQcmlzb24gcG9wdWxhdGlvbiw0MTU0LjAKUmF3IGNvdW50cyxEZW5tYXJrLEROSywyMDIzLFJhcGUsMjM3NS4wClJhdyBjb3VudHMsRGVubWFyayxETkssMjAyMyxTZXh1YWwgdmlvbGVuY2UsNjc2Ni4wClJhdyBjb3VudHMsRGVubWFyayxETkssMjAyMyxTZXh1YWwgYXNzYXVsdCw0MzkxLjAKUmF3IGNvdW50cyxOZXRoZXJsYW5kcyxOTEQsMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwxNTAuMApSYXcgY291bnRzLE5ldGhlcmxhbmRzLE5MRCwyMDA4LFByaXNvbiBwb3B1bGF0aW9uLDE0NjEwLjAKUmF3IGNvdW50cyxOZXRoZXJsYW5kcyxOTEQsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSwxMjUuMApSYXcgY291bnRzLE5ldGhlcmxhbmRzLE5MRCwyMDIzLFByaXNvbiBwb3B1bGF0aW9uLDExNjgxLjAKUmF3IGNvdW50cyxOZXRoZXJsYW5kcyxOTEQsMjAyMyxSYXBlLDI0NTUuMApSYXcgY291bnRzLE5ldGhlcmxhbmRzLE5MRCwyMDIzLFNleHVhbCB2aW9sZW5jZSw1MDIwLjAKUmF3IGNvdW50cyxOZXRoZXJsYW5kcyxOTEQsMjAyMyxTZXh1YWwgYXNzYXVsdCwyNTYwLjAKUmF3IGNvdW50cyxBdXN0cmlhLEFVVCwyMDA4LEludGVudGlvbmFsIGhvbWljaWRlLDU4LjAKUmF3IGNvdW50cyxBdXN0cmlhLEFVVCwyMDA4LFByaXNvbiBwb3B1bGF0aW9uLDgyNDguMApSYXcgY291bnRzLEF1c3RyaWEsQVVULDIwMjMsSW50ZW50aW9uYWwgaG9taWNpZGUsNzUuMApSYXcgY291bnRzLEF1c3RyaWEsQVVULDIwMjMsUHJpc29uIHBvcHVsYXRpb24sOTA4OS4wClJhdyBjb3VudHMsQXVzdHJpYSxBVVQsMjAyMyxSYXBlLDIzMjguMApSYXcgY291bnRzLEF1c3RyaWEsQVVULDIwMjMsU2V4dWFsIHZpb2xlbmNlLDU0NDcuMApSYXcgY291bnRzLEF1c3RyaWEsQVVULDIwMjMsU2V4dWFsIGFzc2F1bHQsMjgwNS4wClJhdyBjb3VudHMsRmlubGFuZCxGSU4sMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwxNjAuMApSYXcgY291bnRzLEZpbmxhbmQsRklOLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sMzUzMC4wClJhdyBjb3VudHMsRmlubGFuZCxGSU4sMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSw2NC4wClJhdyBjb3VudHMsRmlubGFuZCxGSU4sMjAyMyxQcmlzb24gcG9wdWxhdGlvbiwyOTYyLjAKUmF3IGNvdW50cyxGaW5sYW5kLEZJTiwyMDIzLFJhcGUsMjQxNi4wClJhdyBjb3VudHMsRmlubGFuZCxGSU4sMjAyMyxTZXh1YWwgdmlvbGVuY2UsNjIzOC4wClJhdyBjb3VudHMsRmlubGFuZCxGSU4sMjAyMyxTZXh1YWwgYXNzYXVsdCwzODIyLjAKUmF3IGNvdW50cyxTd2VkZW4sU1dFLDIwMDgsSW50ZW50aW9uYWwgaG9taWNpZGUsODIuMApSYXcgY291bnRzLFN3ZWRlbixTV0UsMjAwOCxQcmlzb24gcG9wdWxhdGlvbiw3MDczLjAKUmF3IGNvdW50cyxTd2VkZW4sU1dFLDIwMjMsSW50ZW50aW9uYWwgaG9taWNpZGUsMTIxLjAKUmF3IGNvdW50cyxTd2VkZW4sU1dFLDIwMjMsUHJpc29uIHBvcHVsYXRpb24sOTc0OC4wClJhdyBjb3VudHMsU3dlZGVuLFNXRSwyMDIzLFJhcGUsODkwOC4wClJhdyBjb3VudHMsU3dlZGVuLFNXRSwyMDIzLFNleHVhbCB2aW9sZW5jZSwyMDIxMC4wClJhdyBjb3VudHMsU3dlZGVuLFNXRSwyMDIzLFNleHVhbCBhc3NhdWx0LDEwNzM0LjAKUmF3IGNvdW50cyxJY2VsYW5kLElTTCwyMDA4LEludGVudGlvbmFsIGhvbWljaWRlLDAuMApSYXcgY291bnRzLEljZWxhbmQsSVNMLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sMTQwLjAKUmF3IGNvdW50cyxJY2VsYW5kLElTTCwyMDIzLEludGVudGlvbmFsIGhvbWljaWRlLDUuMApSYXcgY291bnRzLEljZWxhbmQsSVNMLDIwMjMsUHJpc29uIHBvcHVsYXRpb24sMTM4LjAKUmF3IGNvdW50cyxJY2VsYW5kLElTTCwyMDIzLFJhcGUsMTc2LjAKUmF3IGNvdW50cyxJY2VsYW5kLElTTCwyMDIzLFNleHVhbCB2aW9sZW5jZSw1MDQuMApSYXcgY291bnRzLEljZWxhbmQsSVNMLDIwMjMsU2V4dWFsIGFzc2F1bHQsNzAuMApSYXcgY291bnRzLE5vcndheSxOT1IsMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwzNC4wClJhdyBjb3VudHMsTm9yd2F5LE5PUiwyMDA4LFByaXNvbiBwb3B1bGF0aW9uLDM0NzcuMApSYXcgY291bnRzLE5vcndheSxOT1IsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSw0MC4wClJhdyBjb3VudHMsTm9yd2F5LE5PUiwyMDIzLFByaXNvbiBwb3B1bGF0aW9uLDM0MzIuMApSYXcgY291bnRzLE5vcndheSxOT1IsMjAyMyxSYXBlLDIzMjUuMApSYXcgY291bnRzLE5vcndheSxOT1IsMjAyMyxTZXh1YWwgdmlvbGVuY2UsNTI2Mi4wClJhdyBjb3VudHMsTm9yd2F5LE5PUiwyMDIzLFNleHVhbCBhc3NhdWx0LDI0OTAuMApSYXcgY291bnRzLFN3aXR6ZXJsYW5kLENIRSwyMDA4LEludGVudGlvbmFsIGhvbWljaWRlLDU0LjAKUmF3IGNvdW50cyxTd2l0emVybGFuZCxDSEUsMjAwOCxQcmlzb24gcG9wdWxhdGlvbiw1MzAzLjAKUmF3IGNvdW50cyxTd2l0emVybGFuZCxDSEUsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSw1My4wClJhdyBjb3VudHMsU3dpdHplcmxhbmQsQ0hFLDIwMjMsUHJpc29uIHBvcHVsYXRpb24sNjYyOS4wClJhdyBjb3VudHMsU3dpdHplcmxhbmQsQ0hFLDIwMjMsUmFwZSw4MzkuMApSYXcgY291bnRzLFN3aXR6ZXJsYW5kLENIRSwyMDIzLFNleHVhbCB2aW9sZW5jZSw0NTYzLjAKUmF3IGNvdW50cyxTd2l0emVybGFuZCxDSEUsMjAyMyxTZXh1YWwgYXNzYXVsdCw2NzYuMAoiUGVyIDEwMCwwMDAiLERlbm1hcmssRE5LLDIwMDgsSW50ZW50aW9uYWwgaG9taWNpZGUsMC45NgoiUGVyIDEwMCwwMDAiLERlbm1hcmssRE5LLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sNjMuMDIKIlBlciAxMDAsMDAwIixEZW5tYXJrLEROSywyMDIzLEludGVudGlvbmFsIGhvbWljaWRlLDAuODkKIlBlciAxMDAsMDAwIixEZW5tYXJrLEROSywyMDIzLFByaXNvbiBwb3B1bGF0aW9uLDcwLjAyCiJQZXIgMTAwLDAwMCIsRGVubWFyayxETkssMjAyMyxSYXBlLDQwLjAzCiJQZXIgMTAwLDAwMCIsRGVubWFyayxETkssMjAyMyxTZXh1YWwgdmlvbGVuY2UsMTE0LjA1CiJQZXIgMTAwLDAwMCIsRGVubWFyayxETkssMjAyMyxTZXh1YWwgYXNzYXVsdCw3NC4wMQoiUGVyIDEwMCwwMDAiLE5ldGhlcmxhbmRzLE5MRCwyMDA4LEludGVudGlvbmFsIGhvbWljaWRlLDAuOTEKIlBlciAxMDAsMDAwIixOZXRoZXJsYW5kcyxOTEQsMjAwOCxQcmlzb24gcG9wdWxhdGlvbiw4OS4wNgoiUGVyIDEwMCwwMDAiLE5ldGhlcmxhbmRzLE5MRCwyMDIzLEludGVudGlvbmFsIGhvbWljaWRlLDAuNwoiUGVyIDEwMCwwMDAiLE5ldGhlcmxhbmRzLE5MRCwyMDIzLFByaXNvbiBwb3B1bGF0aW9uLDY1LjU4CiJQZXIgMTAwLDAwMCIsTmV0aGVybGFuZHMsTkxELDIwMjMsUmFwZSwxMy43OAoiUGVyIDEwMCwwMDAiLE5ldGhlcmxhbmRzLE5MRCwyMDIzLFNleHVhbCB2aW9sZW5jZSwyOC4xOAoiUGVyIDEwMCwwMDAiLE5ldGhlcmxhbmRzLE5MRCwyMDIzLFNleHVhbCBhc3NhdWx0LDE0LjM3CiJQZXIgMTAwLDAwMCIsQXVzdHJpYSxBVVQsMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwwLjcKIlBlciAxMDAsMDAwIixBdXN0cmlhLEFVVCwyMDA4LFByaXNvbiBwb3B1bGF0aW9uLDk5LjI4CiJQZXIgMTAwLDAwMCIsQXVzdHJpYSxBVVQsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSwwLjgyCiJQZXIgMTAwLDAwMCIsQXVzdHJpYSxBVVQsMjAyMyxQcmlzb24gcG9wdWxhdGlvbiw5OS44MwoiUGVyIDEwMCwwMDAiLEF1c3RyaWEsQVVULDIwMjMsUmFwZSwyNS41NwoiUGVyIDEwMCwwMDAiLEF1c3RyaWEsQVVULDIwMjMsU2V4dWFsIHZpb2xlbmNlLDU5LjgzCiJQZXIgMTAwLDAwMCIsQXVzdHJpYSxBVVQsMjAyMyxTZXh1YWwgYXNzYXVsdCwzMC44MQoiUGVyIDEwMCwwMDAiLEZpbmxhbmQsRklOLDIwMDgsSW50ZW50aW9uYWwgaG9taWNpZGUsMy4wMgoiUGVyIDEwMCwwMDAiLEZpbmxhbmQsRklOLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sNjYuNgoiUGVyIDEwMCwwMDAiLEZpbmxhbmQsRklOLDIwMjMsSW50ZW50aW9uYWwgaG9taWNpZGUsMS4xNQoiUGVyIDEwMCwwMDAiLEZpbmxhbmQsRklOLDIwMjMsUHJpc29uIHBvcHVsYXRpb24sNTMuMjQKIlBlciAxMDAsMDAwIixGaW5sYW5kLEZJTiwyMDIzLFJhcGUsNDMuNDIKIlBlciAxMDAsMDAwIixGaW5sYW5kLEZJTiwyMDIzLFNleHVhbCB2aW9sZW5jZSwxMTIuMTEKIlBlciAxMDAsMDAwIixGaW5sYW5kLEZJTiwyMDIzLFNleHVhbCBhc3NhdWx0LDY4LjY5CiJQZXIgMTAwLDAwMCIsU3dlZGVuLFNXRSwyMDA4LEludGVudGlvbmFsIGhvbWljaWRlLDAuODkKIlBlciAxMDAsMDAwIixTd2VkZW4sU1dFLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sNzcuMDIKIlBlciAxMDAsMDAwIixTd2VkZW4sU1dFLDIwMjMsSW50ZW50aW9uYWwgaG9taWNpZGUsMS4xNQoiUGVyIDEwMCwwMDAiLFN3ZWRlbixTV0UsMjAyMyxQcmlzb24gcG9wdWxhdGlvbiw5Mi42NQoiUGVyIDEwMCwwMDAiLFN3ZWRlbixTV0UsMjAyMyxSYXBlLDg0LjY2CiJQZXIgMTAwLDAwMCIsU3dlZGVuLFNXRSwyMDIzLFNleHVhbCB2aW9sZW5jZSwxOTIuMDgKIlBlciAxMDAsMDAwIixTd2VkZW4sU1dFLDIwMjMsU2V4dWFsIGFzc2F1bHQsMTAyLjAyCiJQZXIgMTAwLDAwMCIsSWNlbGFuZCxJU0wsMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwwLjAKIlBlciAxMDAsMDAwIixJY2VsYW5kLElTTCwyMDA4LFByaXNvbiBwb3B1bGF0aW9uLDQ0LjM4CiJQZXIgMTAwLDAwMCIsSWNlbGFuZCxJU0wsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSwxLjI5CiJQZXIgMTAwLDAwMCIsSWNlbGFuZCxJU0wsMjAyMyxQcmlzb24gcG9wdWxhdGlvbiwzNS41OQoiUGVyIDEwMCwwMDAiLEljZWxhbmQsSVNMLDIwMjMsUmFwZSw0NS4zOQoiUGVyIDEwMCwwMDAiLEljZWxhbmQsSVNMLDIwMjMsU2V4dWFsIHZpb2xlbmNlLDEyOS45OAoiUGVyIDEwMCwwMDAiLEljZWxhbmQsSVNMLDIwMjMsU2V4dWFsIGFzc2F1bHQsMTguMDUKIlBlciAxMDAsMDAwIixOb3J3YXksTk9SLDIwMDgsSW50ZW50aW9uYWwgaG9taWNpZGUsMC43MgoiUGVyIDEwMCwwMDAiLE5vcndheSxOT1IsMjAwOCxQcmlzb24gcG9wdWxhdGlvbiw3My40CiJQZXIgMTAwLDAwMCIsTm9yd2F5LE5PUiwyMDIzLEludGVudGlvbmFsIGhvbWljaWRlLDAuNzMKIlBlciAxMDAsMDAwIixOb3J3YXksTk9SLDIwMjMsUHJpc29uIHBvcHVsYXRpb24sNjIuNTMKIlBlciAxMDAsMDAwIixOb3J3YXksTk9SLDIwMjMsUmFwZSw0Mi4zNgoiUGVyIDEwMCwwMDAiLE5vcndheSxOT1IsMjAyMyxTZXh1YWwgdmlvbGVuY2UsOTUuODYKIlBlciAxMDAsMDAwIixOb3J3YXksTk9SLDIwMjMsU2V4dWFsIGFzc2F1bHQsNDUuMzYKIlBlciAxMDAsMDAwIixTd2l0emVybGFuZCxDSEUsMjAwOCxJbnRlbnRpb25hbCBob21pY2lkZSwwLjcxCiJQZXIgMTAwLDAwMCIsU3dpdHplcmxhbmQsQ0hFLDIwMDgsUHJpc29uIHBvcHVsYXRpb24sNjkuODQKIlBlciAxMDAsMDAwIixTd2l0emVybGFuZCxDSEUsMjAyMyxJbnRlbnRpb25hbCBob21pY2lkZSwwLjYKIlBlciAxMDAsMDAwIixTd2l0emVybGFuZCxDSEUsMjAyMyxQcmlzb24gcG9wdWxhdGlvbiw3NS4yCiJQZXIgMTAwLDAwMCIsU3dpdHplcmxhbmQsQ0hFLDIwMjMsUmFwZSw5LjUyCiJQZXIgMTAwLDAwMCIsU3dpdHplcmxhbmQsQ0hFLDIwMjMsU2V4dWFsIHZpb2xlbmNlLDUxLjc2CiJQZXIgMTAwLDAwMCIsU3dpdHplcmxhbmQsQ0hFLDIwMjMsU2V4dWFsIGFzc2F1bHQsNy42Nwo=">
+      Download Map Dataset CSV
+    </a>
+  </section>
+
+
+<section class="table-card">
+    <h2>Correlation outcome summary</h2>
+    <div id="summaryTable"></div>
+  </section>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const DATA = [{"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2008, "variable": "Intentional homicide", "value": 53.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2008, "variable": "Prison population", "value": 3451.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Intentional homicide", "value": 53.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Prison population", "value": 4154.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Rape", "value": 2375.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Sexual violence", "value": 6766.0}, {"dataset": "Raw counts", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Sexual assault", "value": 4391.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2008, "variable": "Intentional homicide", "value": 150.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2008, "variable": "Prison population", "value": 14610.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Intentional homicide", "value": 125.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Prison population", "value": 11681.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Rape", "value": 2455.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Sexual violence", "value": 5020.0}, {"dataset": "Raw counts", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Sexual assault", "value": 2560.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2008, "variable": "Intentional homicide", "value": 58.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2008, "variable": "Prison population", "value": 8248.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Intentional homicide", "value": 75.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Prison population", "value": 9089.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Rape", "value": 2328.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Sexual violence", "value": 5447.0}, {"dataset": "Raw counts", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Sexual assault", "value": 2805.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2008, "variable": "Intentional homicide", "value": 160.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2008, "variable": "Prison population", "value": 3530.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Intentional homicide", "value": 64.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Prison population", "value": 2962.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Rape", "value": 2416.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Sexual violence", "value": 6238.0}, {"dataset": "Raw counts", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Sexual assault", "value": 3822.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2008, "variable": "Intentional homicide", "value": 82.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2008, "variable": "Prison population", "value": 7073.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Intentional homicide", "value": 121.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Prison population", "value": 9748.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Rape", "value": 8908.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Sexual violence", "value": 20210.0}, {"dataset": "Raw counts", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Sexual assault", "value": 10734.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2008, "variable": "Intentional homicide", "value": 0.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2008, "variable": "Prison population", "value": 140.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Intentional homicide", "value": 5.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Prison population", "value": 138.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Rape", "value": 176.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Sexual violence", "value": 504.0}, {"dataset": "Raw counts", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Sexual assault", "value": 70.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2008, "variable": "Intentional homicide", "value": 34.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2008, "variable": "Prison population", "value": 3477.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Intentional homicide", "value": 40.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Prison population", "value": 3432.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Rape", "value": 2325.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Sexual violence", "value": 5262.0}, {"dataset": "Raw counts", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Sexual assault", "value": 2490.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2008, "variable": "Intentional homicide", "value": 54.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2008, "variable": "Prison population", "value": 5303.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Intentional homicide", "value": 53.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Prison population", "value": 6629.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Rape", "value": 839.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Sexual violence", "value": 4563.0}, {"dataset": "Raw counts", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Sexual assault", "value": 676.0}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2008, "variable": "Intentional homicide", "value": 0.96}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2008, "variable": "Prison population", "value": 63.02}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Intentional homicide", "value": 0.89}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Prison population", "value": 70.02}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Rape", "value": 40.03}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Sexual violence", "value": 114.05}, {"dataset": "Per 100,000", "country": "Denmark", "iso3": "DNK", "year": 2023, "variable": "Sexual assault", "value": 74.01}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2008, "variable": "Intentional homicide", "value": 0.91}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2008, "variable": "Prison population", "value": 89.06}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Intentional homicide", "value": 0.7}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Prison population", "value": 65.58}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Rape", "value": 13.78}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Sexual violence", "value": 28.18}, {"dataset": "Per 100,000", "country": "Netherlands", "iso3": "NLD", "year": 2023, "variable": "Sexual assault", "value": 14.37}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2008, "variable": "Intentional homicide", "value": 0.7}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2008, "variable": "Prison population", "value": 99.28}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Intentional homicide", "value": 0.82}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Prison population", "value": 99.83}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Rape", "value": 25.57}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Sexual violence", "value": 59.83}, {"dataset": "Per 100,000", "country": "Austria", "iso3": "AUT", "year": 2023, "variable": "Sexual assault", "value": 30.81}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2008, "variable": "Intentional homicide", "value": 3.02}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2008, "variable": "Prison population", "value": 66.6}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Intentional homicide", "value": 1.15}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Prison population", "value": 53.24}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Rape", "value": 43.42}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Sexual violence", "value": 112.11}, {"dataset": "Per 100,000", "country": "Finland", "iso3": "FIN", "year": 2023, "variable": "Sexual assault", "value": 68.69}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2008, "variable": "Intentional homicide", "value": 0.89}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2008, "variable": "Prison population", "value": 77.02}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Intentional homicide", "value": 1.15}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Prison population", "value": 92.65}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Rape", "value": 84.66}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Sexual violence", "value": 192.08}, {"dataset": "Per 100,000", "country": "Sweden", "iso3": "SWE", "year": 2023, "variable": "Sexual assault", "value": 102.02}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2008, "variable": "Intentional homicide", "value": 0.0}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2008, "variable": "Prison population", "value": 44.38}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Intentional homicide", "value": 1.29}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Prison population", "value": 35.59}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Rape", "value": 45.39}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Sexual violence", "value": 129.98}, {"dataset": "Per 100,000", "country": "Iceland", "iso3": "ISL", "year": 2023, "variable": "Sexual assault", "value": 18.05}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2008, "variable": "Intentional homicide", "value": 0.72}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2008, "variable": "Prison population", "value": 73.4}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Intentional homicide", "value": 0.73}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Prison population", "value": 62.53}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Rape", "value": 42.36}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Sexual violence", "value": 95.86}, {"dataset": "Per 100,000", "country": "Norway", "iso3": "NOR", "year": 2023, "variable": "Sexual assault", "value": 45.36}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2008, "variable": "Intentional homicide", "value": 0.71}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2008, "variable": "Prison population", "value": 69.84}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Intentional homicide", "value": 0.6}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Prison population", "value": 75.2}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Rape", "value": 9.52}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Sexual violence", "value": 51.76}, {"dataset": "Per 100,000", "country": "Switzerland", "iso3": "CHE", "year": 2023, "variable": "Sexual assault", "value": 7.67}];
+const GEOJSON = {"type": "FeatureCollection", "features": [{"id": "110", "type": "Feature", "properties": {"pop_est": 9960487, "continent": "Europe", "name": "Sweden", "iso_a3": "SWE", "gdp_md_est": 498100.0}, "geometry": {"type": "Polygon", "coordinates": [[[11.027368605196868, 58.85614940045936], [11.468271925511146, 59.43239329694604], [12.3003658382749, 60.11793284773003], [12.631146681375185, 61.293571682370136], [11.992064243221563, 61.80036245385655], [11.930569288794231, 63.12831757267698], [12.579935336973934, 64.06621898055833], [13.571916131248713, 64.04911408146971], [13.919905226302204, 64.44542064071608], [13.55568973150909, 64.78702769638151], [15.108411492583002, 66.19386688909547], [16.768878614985482, 68.0139366726314], [17.729181756265348, 68.01055186631628], [17.993868442464333, 68.56739126247736], [19.878559604581255, 68.40719432237258], [20.025268995857886, 69.0651386583127], [20.645592889089528, 69.10624726020087], [23.53947309743444, 67.93600861273525], [23.565879754335583, 66.39605093043743], [23.903378533633802, 66.00692739527962], [22.18317345550193, 65.72374054632017], [21.21351687997722, 65.02600535751527], [21.369631381930958, 64.41358795842429], [17.84777916837521, 62.74940013289681], [17.119554884518124, 61.34116567651097], [17.83134606290639, 60.63658336042741], [18.78772179533209, 60.081914374422595], [17.86922488777634, 58.9537661810587], [16.829185011470088, 58.71982697207339], [16.447709588291474, 57.041118069071885], [15.879785597403783, 56.10430186626866], [14.666681349352075, 56.200885118222175], [14.100721062891465, 55.40778107362265], [12.942910597392057, 55.36173737245058], [12.625100538797028, 56.30708018658197], [11.787942335668674, 57.44181712506307], [11.027368605196868, 58.85614940045936]]]}}, {"id": "114", "type": "Feature", "properties": {"pop_est": 8754413, "continent": "Europe", "name": "Austria", "iso_a3": "AUT", "gdp_md_est": 416600.0}, "geometry": {"type": "Polygon", "coordinates": [[[16.979666782304037, 48.123497015976305], [16.90375410326726, 47.71486562762833], [16.340584344150415, 47.71290192320123], [16.534267612380376, 47.49617096616912], [16.202298211337364, 46.85238597267696], [16.011663852612656, 46.6836107448117], [15.137091912504985, 46.65870270444703], [14.63247155117483, 46.43181732846955], [12.376485223040817, 46.76755910906985], [12.153088006243054, 47.11539317482645], [11.16482791509327, 46.94157949481273], [11.048555942436536, 46.75135854754634], [9.932448357796659, 46.92072805438296], [9.479969516649021, 47.102809963563374], [9.632931756232978, 47.34760122332999], [9.59422610844635, 47.52505809182027], [9.89606814946319, 47.580196845075704], [10.402083774465211, 47.30248769793916], [10.544504021861599, 47.5663992376538], [11.426414015354737, 47.523766181012974], [12.141357456112788, 47.703083401065776], [12.620759718484493, 47.67238760028441], [12.932626987365948, 47.467645575544], [13.02585127122049, 47.63758352313583], [12.884102817443875, 48.28914581968786], [13.243357374737, 48.416114813829054], [13.595945672264437, 48.87717194273715], [14.338897739324722, 48.55530528420721], [14.901447381254057, 48.964401760445824], [15.253415561593982, 49.03907420510758], [16.02964725105022, 48.73389903420793], [16.499282667718774, 48.78580801044511], [16.960288120194576, 48.5969823268506], [16.879982944413, 48.47001333270947], [16.979666782304037, 48.123497015976305]]]}}, {"id": "127", "type": "Feature", "properties": {"pop_est": 8236303, "continent": "Europe", "name": "Switzerland", "iso_a3": "CHE", "gdp_md_est": 496300.0}, "geometry": {"type": "Polygon", "coordinates": [[[9.59422610844635, 47.52505809182027], [9.632931756232978, 47.34760122332999], [9.479969516649021, 47.102809963563374], [9.932448357796659, 46.92072805438296], [10.44270145024663, 46.89354625099743], [10.363378126678612, 46.48357127540986], [9.922836541390382, 46.31489940040919], [9.182881707403055, 46.44021474871698], [8.966305779667806, 46.03693187111119], [8.489952426801324, 46.005150865251686], [8.31662967289438, 46.16364248309086], [7.7559920589598335, 45.82449005795931], [7.2738509456766565, 45.776947740250776], [6.843592970414505, 45.99114655210061], [6.5000997249704255, 46.42967275652944], [6.022609490593538, 46.27298981382047], [6.037388950229001, 46.725778713561866], [6.768713820023606, 47.2877082383037], [6.736571079138059, 47.541801255882845], [7.192202182655507, 47.44976552997102], [7.466759067422231, 47.62058197691181], [8.317301466514095, 47.61357982033627], [8.522611932009767, 47.83082754169129], [9.59422610844635, 47.52505809182027]]]}}, {"id": "130", "type": "Feature", "properties": {"pop_est": 17084719, "continent": "Europe", "name": "Netherlands", "iso_a3": "NLD", "gdp_md_est": 870800.0}, "geometry": {"type": "Polygon", "coordinates": [[[6.905139601274129, 53.48216217713065], [7.092053256873896, 53.144043280644894], [6.842869500362383, 52.22844025329755], [6.589396599970826, 51.852029120483394], [5.988658074577813, 51.851615709025054], [6.15665815595878, 50.80372101501058], [5.606975945670001, 51.03729848896978], [4.973991326526914, 51.47502370869813], [4.047071160507528, 51.26725861266857], [3.3149711442285366, 51.34575511331991], [3.8302885270431375, 51.62054454203195], [4.705997348661185, 53.091798407597764], [6.074182570020923, 53.510403347378144], [6.905139601274129, 53.48216217713065]]]}}, {"id": "142", "type": "Feature", "properties": {"pop_est": 5605948, "continent": "Europe", "name": "Denmark", "iso_a3": "DNK", "gdp_md_est": 264800.0}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[9.921906365609118, 54.98310415304803], [9.282048780971138, 54.830865383516176], [8.526229282270208, 54.96274363872516], [8.120310906617533, 55.5177226833236], [8.08997684086222, 56.54001170513759], [8.543437534223415, 57.11000275331695], [9.424469028367554, 57.1720661484995], [9.775558709358535, 57.44794078228966], [10.580005730846125, 57.73001658795485], [10.546105991262664, 57.21573273378612], [10.250000034230226, 56.89001618105044], [10.369992710011957, 56.60998159446079], [10.912181837618306, 56.458621324277885], [10.667803989310016, 56.08138336854721], [10.369992710011957, 56.19000722922473], [9.649984978889279, 55.469999498102055], [9.921906365609118, 54.98310415304803]]], [[[12.370904168353292, 56.111407375708794], [12.690006137755603, 55.60999095318074], [12.089991082414684, 54.80001455343792], [11.043543328504226, 55.36486379660424], [10.903913608451603, 55.77995473898872], [12.370904168353292, 56.111407375708794]]]]}}, {"id": "144", "type": "Feature", "properties": {"pop_est": 339747, "continent": "Europe", "name": "Iceland", "iso_a3": "ISL", "gdp_md_est": 16150.0}, "geometry": {"type": "Polygon", "coordinates": [[[-14.508695441129234, 66.45589223903143], [-14.739637417041607, 65.8087482774403], [-13.60973222497981, 65.12667104761987], [-14.909833746794902, 64.36408193628868], [-18.656245896874992, 63.49638296167582], [-22.762971971110158, 63.960178941495386], [-21.778484259517683, 64.40211579045551], [-23.95504391121911, 64.8911298692335], [-22.184402635170358, 65.0849681667603], [-22.227423265053332, 65.37859365504274], [-24.326184047939336, 65.61118927678847], [-23.65051469572309, 66.26251902939522], [-22.134922451250887, 66.41046865504687], [-20.57628373867955, 65.73211212835143], [-19.05684160000159, 66.27660085719477], [-17.79862382655905, 65.99385325790978], [-16.167818976292125, 66.52679230413587], [-14.508695441129234, 66.45589223903143]]]}}, {"id": "151", "type": "Feature", "properties": {"pop_est": 5491218, "continent": "Europe", "name": "Finland", "iso_a3": "FIN", "gdp_md_est": 224137.0}, "geometry": {"type": "Polygon", "coordinates": [[[28.591929559043194, 69.06477692328666], [28.445943637818658, 68.36461294216404], [29.97742638522061, 67.69829702419275], [29.054588657352326, 66.94428620062206], [30.217650000000003, 65.80598], [29.54442955904699, 64.94867157659048], [30.44468468600371, 64.20445343693909], [30.035872430142717, 63.55281362573855], [31.516092156711125, 62.86768748641289], [31.139991082490894, 62.35769277612441], [28.069997592895277, 60.50351654727584], [26.255172967236973, 60.4239606797625], [24.496623976344523, 60.05731639265166], [22.869694858499457, 59.846373196036225], [22.290763787533592, 60.39192129174154], [21.322244093519316, 60.720169989659524], [21.544866163832694, 61.70532949487179], [21.05921105315369, 62.60739329695874], [21.536029493910803, 63.18973501245587], [22.442744174903993, 63.81781037053129], [24.730511508897536, 64.90234365504084], [25.398067661243942, 65.11142650009374], [25.294043003040404, 65.53434642197045], [23.903378533633802, 66.00692739527962], [23.565879754335583, 66.39605093043743], [23.53947309743444, 67.93600861273525], [20.645592889089528, 69.10624726020087], [21.244936150810673, 69.37044302029308], [22.356237827247412, 68.84174144151491], [23.66204959483076, 68.89124746365054], [24.735679152126725, 68.64955678982146], [25.689212680776365, 69.09211375596904], [26.179622023226244, 69.82529897732614], [27.732292107867863, 70.16419302029625], [29.015572950971972, 69.76649119737799], [28.591929559043194, 69.06477692328666]]]}}]};
+const SUMMARY = [{"dataset": "Raw counts", "exercise": "Exercise 1", "year": 2008, "xvar": "Intentional homicide", "yvar": "Prison population", "r": 0.601, "strength": "Medium", "direction": "Positive", "decision": "Fail to reject null hypothesis"}, {"dataset": "Raw counts", "exercise": "Exercise 2", "year": 2023, "xvar": "Intentional homicide", "yvar": "Prison population", "r": 0.911, "strength": "Large", "direction": "Positive", "decision": "Reject null hypothesis"}, {"dataset": "Raw counts", "exercise": "Exercise 3", "year": 2023, "xvar": "Rape", "yvar": "Sexual violence", "r": 0.986, "strength": "Large", "direction": "Positive", "decision": "Reject null hypothesis"}, {"dataset": "Raw counts", "exercise": "Exercise 4", "year": 2023, "xvar": "Rape", "yvar": "Sexual assault", "r": 0.977, "strength": "Large", "direction": "Positive", "decision": "Reject null hypothesis"}, {"dataset": "Per 100,000", "exercise": "Exercise 1", "year": 2008, "xvar": "Intentional homicide", "yvar": "Prison population", "r": 0.07, "strength": "Very weak", "direction": "Positive", "decision": "Fail to reject null hypothesis"}, {"dataset": "Per 100,000", "exercise": "Exercise 2", "year": 2023, "xvar": "Intentional homicide", "yvar": "Prison population", "r": -0.378, "strength": "Small", "direction": "Negative", "decision": "Fail to reject null hypothesis"}, {"dataset": "Per 100,000", "exercise": "Exercise 3", "year": 2023, "xvar": "Rape", "yvar": "Sexual violence", "r": 0.966, "strength": "Large", "direction": "Positive", "decision": "Reject null hypothesis"}, {"dataset": "Per 100,000", "exercise": "Exercise 4", "year": 2023, "xvar": "Rape", "yvar": "Sexual assault", "r": 0.841, "strength": "Large", "direction": "Positive", "decision": "Reject null hypothesis"}];
+const SOURCES = [{"Source": "Crime data", "Eurostat dataset": "crim_off_cat \u2014 Police-recorded offences by offence category", "Units used": "Number; Per hundred thousand inhabitants", "Download date / extraction note": "Uploaded Eurostat spreadsheet extracted 07/05/2026 17:34:29 from ESTAT"}, {"Source": "Prison data", "Eurostat dataset": "crim_pris_cap \u2014 Prison capacity and number of persons held", "Units used": "Number; Per hundred thousand inhabitants", "Download date / extraction note": "Uploaded Eurostat spreadsheet extracted 07/05/2026 17:38:46 from ESTAT"}, {"Source": "Critical value", "Eurostat dataset": "Pearson r critical value", "Units used": "df = 6; p = .05; two-tailed; r critical = .707", "Download date / extraction note": "Used for all exercises because n = 8 countries"}];
+const state = {dataset: "Raw counts", year: 2008, variable: "Intentional homicide"};
+const datasets = ["Raw counts", "Per 100,000"];
+const years = [2008, 2023];
+
+function variablesForYear(year) {
+  return [...new Set(DATA.filter(d => d.year === Number(year)).map(d => d.variable))];
+}
+function currentRows() {
+  return DATA.filter(d => d.dataset === state.dataset && d.year === Number(state.year) && d.variable === state.variable).sort((a,b) => b.value - a.value);
+}
+function fmt(v) {
+  if (state.dataset === "Per 100,000") return Number(v).toFixed(2);
+  return Math.round(v).toLocaleString();
+}
+function renderButtons() {
+  document.getElementById("datasetBtns").innerHTML = datasets.map(d => `<button class="ctrl-btn ${d===state.dataset?'active':''}" data-value="${d}">${d}</button>`).join("");
+  document.querySelectorAll("#datasetBtns button").forEach(btn => btn.onclick = () => { state.dataset = btn.dataset.value; update(); });
+  document.getElementById("yearBtns").innerHTML = years.map(y => `<button class="ctrl-btn ${y===state.year?'active':''}" data-value="${y}">${y}</button>`).join("");
+  document.querySelectorAll("#yearBtns button").forEach(btn => btn.onclick = () => { state.year = Number(btn.dataset.value); update(); });
+}
+function renderVariableSelect() {
+  const vars = variablesForYear(state.year);
+  if (!vars.includes(state.variable)) state.variable = vars[0];
+  const sel = document.getElementById("variableSelect");
+  sel.innerHTML = vars.map(v => `<option value="${v}">${v}</option>`).join("");
+  sel.value = state.variable;
+  sel.onchange = () => { state.variable = sel.value; update(); };
+}
+
+const map = L.map('map', {zoomControl:true, scrollWheelZoom:true});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+}).addTo(map);
+
+let geoLayer = null;
+let legend = null;
+
+function getColor(value, min, max) {
+  if (max === min) return '#6baed6';
+  const t = (value - min) / (max - min);
+  if (t > 0.85) return '#08519c';
+  if (t > 0.65) return '#2171b5';
+  if (t > 0.45) return '#4292c6';
+  if (t > 0.25) return '#6baed6';
+  return '#deebf7';
+}
+function updateLegend(min, max) {
+  if (legend) legend.remove();
+  legend = L.control({position:'bottomright'});
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `<div class="legend-title">${state.dataset === "Per 100,000" ? "Rate scale" : "Count scale"}</div><div class="legend-bar"></div><div class="legend-labels"><span>${fmt(min)}</span><span>${fmt(max)}</span></div>`;
+    return div;
+  };
+  legend.addTo(map);
+}
+
+function drawMap() {
+  const rows = currentRows();
+  const byIso = Object.fromEntries(rows.map(r => [r.iso3, r]));
+  const values = rows.map(r => r.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+
+  if (geoLayer) geoLayer.remove();
+
+  geoLayer = L.geoJSON(GEOJSON, {
+    style: function(feature) {
+      const iso = feature.properties.iso_a3;
+      const row = byIso[iso];
+      const value = row ? row.value : null;
+      return {
+        color: "#ffffff",
+        weight: 1.5,
+        fillColor: value !== null ? getColor(value, min, max) : "#e5e7eb",
+        fillOpacity: 0.8
+      };
+    },
+    onEachFeature: function(feature, layer) {
+      const iso = feature.properties.iso_a3;
+      const row = byIso[iso];
+      if (row) {
+        layer.bindPopup(`<strong>${row.country}</strong><br>Dataset: ${state.dataset}<br>Variable: ${state.variable}<br>Year: ${state.year}<br>Value: ${fmt(row.value)}`);
+        layer.bindTooltip(`<strong>${row.country}</strong><br>${fmt(row.value)}`, {sticky:true});
+      }
+    }
+  }).addTo(map);
+
+  map.fitBounds(geoLayer.getBounds(), {padding:[24,24]});
+  updateLegend(min, max);
+}
+
+function updatePanel() {
+  const rows = currentRows();
+  const high = rows[0], low = rows[rows.length - 1];
+  document.getElementById("panelDataset").textContent = state.dataset;
+  document.getElementById("panelVariable").textContent = `${state.variable}, ${state.year}`;
+  document.getElementById("panelHigh").textContent = `${high.country}: ${fmt(high.value)}`;
+  document.getElementById("panelLow").textContent = `${low.country}: ${fmt(low.value)}`;
+  document.getElementById("sourcesNote").innerHTML = SOURCES.map(s => `<div><strong>${s["Source"] || ""}</strong>: ${s["Eurostat dataset"] || ""}</div>`).join("");
+}
+
+function renderValueTable() {
+  const rows = currentRows();
+  let html = `<table><thead><tr><th>Rank</th><th>Country</th><th>Value</th><th>Dataset</th></tr></thead><tbody>`;
+  rows.forEach((r, i) => { html += `<tr><td>${i+1}</td><td>${r.country}</td><td>${fmt(r.value)}</td><td>${state.dataset}</td></tr>`; });
+  html += `</tbody></table>`;
+  document.getElementById("valueTable").innerHTML = html;
+}
+
+function renderSummary() {
+  let html = `<table><thead><tr><th>Dataset</th><th>Exercise</th><th>Variables</th><th>Pearson r</th><th>Strength</th><th>Direction</th><th>Decision</th></tr></thead><tbody>`;
+  SUMMARY.forEach(s => { html += `<tr><td>${s.dataset}</td><td>${s.exercise}</td><td>${s.xvar} + ${s.yvar} (${s.year})</td><td>${s.r.toFixed(3)}</td><td>${s.strength}</td><td>${s.direction}</td><td>${s.decision}</td></tr>`; });
+  html += `</tbody></table>`;
+  document.getElementById("summaryTable").innerHTML = html;
+}
+
+function update() {
+  renderButtons();
+  renderVariableSelect();
+  drawMap();
+  updatePanel();
+  renderValueTable();
+}
+renderSummary();
+update();
+</script>
+</body>
+</html>
