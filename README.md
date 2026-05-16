@@ -17,7 +17,6 @@ The map visualizes selected crime and criminal justice indicators for eight Euro
 
 Users can navigate the map by:
 
-- Dataset type: raw counts or per 100,000 inhabitants
 - Year: 2008 or 2023
 - Variable: intentional homicide, prison population, rape, sexual violence, and sexual assault
 
@@ -28,7 +27,7 @@ The data were downloaded from Eurostat:
 - `crim_off_cat` — Police-recorded offences by offence category
 - `crim_pris_cap` — Prison capacity and number of persons held
 
-The downloadable CSV included in this repository contains the long-format data used to build the map.
+The downloadable CSV included in this repository contains the long-format raw-count data used to build the map.
 
 ## Files
 

@@ -1,113 +1,57 @@
-dataset,country,iso3,year,variable,value
-Raw counts,Denmark,DNK,2008,Intentional homicide,53.0
-Raw counts,Denmark,DNK,2008,Prison population,3451.0
-Raw counts,Denmark,DNK,2023,Intentional homicide,53.0
-Raw counts,Denmark,DNK,2023,Prison population,4154.0
-Raw counts,Denmark,DNK,2023,Rape,2375.0
-Raw counts,Denmark,DNK,2023,Sexual violence,6766.0
-Raw counts,Denmark,DNK,2023,Sexual assault,4391.0
-Raw counts,Netherlands,NLD,2008,Intentional homicide,150.0
-Raw counts,Netherlands,NLD,2008,Prison population,14610.0
-Raw counts,Netherlands,NLD,2023,Intentional homicide,125.0
-Raw counts,Netherlands,NLD,2023,Prison population,11681.0
-Raw counts,Netherlands,NLD,2023,Rape,2455.0
-Raw counts,Netherlands,NLD,2023,Sexual violence,5020.0
-Raw counts,Netherlands,NLD,2023,Sexual assault,2560.0
-Raw counts,Austria,AUT,2008,Intentional homicide,58.0
-Raw counts,Austria,AUT,2008,Prison population,8248.0
-Raw counts,Austria,AUT,2023,Intentional homicide,75.0
-Raw counts,Austria,AUT,2023,Prison population,9089.0
-Raw counts,Austria,AUT,2023,Rape,2328.0
-Raw counts,Austria,AUT,2023,Sexual violence,5447.0
-Raw counts,Austria,AUT,2023,Sexual assault,2805.0
-Raw counts,Finland,FIN,2008,Intentional homicide,160.0
-Raw counts,Finland,FIN,2008,Prison population,3530.0
-Raw counts,Finland,FIN,2023,Intentional homicide,64.0
-Raw counts,Finland,FIN,2023,Prison population,2962.0
-Raw counts,Finland,FIN,2023,Rape,2416.0
-Raw counts,Finland,FIN,2023,Sexual violence,6238.0
-Raw counts,Finland,FIN,2023,Sexual assault,3822.0
-Raw counts,Sweden,SWE,2008,Intentional homicide,82.0
-Raw counts,Sweden,SWE,2008,Prison population,7073.0
-Raw counts,Sweden,SWE,2023,Intentional homicide,121.0
-Raw counts,Sweden,SWE,2023,Prison population,9748.0
-Raw counts,Sweden,SWE,2023,Rape,8908.0
-Raw counts,Sweden,SWE,2023,Sexual violence,20210.0
-Raw counts,Sweden,SWE,2023,Sexual assault,10734.0
-Raw counts,Iceland,ISL,2008,Intentional homicide,0.0
-Raw counts,Iceland,ISL,2008,Prison population,140.0
-Raw counts,Iceland,ISL,2023,Intentional homicide,5.0
-Raw counts,Iceland,ISL,2023,Prison population,138.0
-Raw counts,Iceland,ISL,2023,Rape,176.0
-Raw counts,Iceland,ISL,2023,Sexual violence,504.0
-Raw counts,Iceland,ISL,2023,Sexual assault,70.0
-Raw counts,Norway,NOR,2008,Intentional homicide,34.0
-Raw counts,Norway,NOR,2008,Prison population,3477.0
-Raw counts,Norway,NOR,2023,Intentional homicide,40.0
-Raw counts,Norway,NOR,2023,Prison population,3432.0
-Raw counts,Norway,NOR,2023,Rape,2325.0
-Raw counts,Norway,NOR,2023,Sexual violence,5262.0
-Raw counts,Norway,NOR,2023,Sexual assault,2490.0
-Raw counts,Switzerland,CHE,2008,Intentional homicide,54.0
-Raw counts,Switzerland,CHE,2008,Prison population,5303.0
-Raw counts,Switzerland,CHE,2023,Intentional homicide,53.0
-Raw counts,Switzerland,CHE,2023,Prison population,6629.0
-Raw counts,Switzerland,CHE,2023,Rape,839.0
-Raw counts,Switzerland,CHE,2023,Sexual violence,4563.0
-Raw counts,Switzerland,CHE,2023,Sexual assault,676.0
-"Per 100,000",Denmark,DNK,2008,Intentional homicide,0.96
-"Per 100,000",Denmark,DNK,2008,Prison population,63.02
-"Per 100,000",Denmark,DNK,2023,Intentional homicide,0.89
-"Per 100,000",Denmark,DNK,2023,Prison population,70.02
-"Per 100,000",Denmark,DNK,2023,Rape,40.03
-"Per 100,000",Denmark,DNK,2023,Sexual violence,114.05
-"Per 100,000",Denmark,DNK,2023,Sexual assault,74.01
-"Per 100,000",Netherlands,NLD,2008,Intentional homicide,0.91
-"Per 100,000",Netherlands,NLD,2008,Prison population,89.06
-"Per 100,000",Netherlands,NLD,2023,Intentional homicide,0.7
-"Per 100,000",Netherlands,NLD,2023,Prison population,65.58
-"Per 100,000",Netherlands,NLD,2023,Rape,13.78
-"Per 100,000",Netherlands,NLD,2023,Sexual violence,28.18
-"Per 100,000",Netherlands,NLD,2023,Sexual assault,14.37
-"Per 100,000",Austria,AUT,2008,Intentional homicide,0.7
-"Per 100,000",Austria,AUT,2008,Prison population,99.28
-"Per 100,000",Austria,AUT,2023,Intentional homicide,0.82
-"Per 100,000",Austria,AUT,2023,Prison population,99.83
-"Per 100,000",Austria,AUT,2023,Rape,25.57
-"Per 100,000",Austria,AUT,2023,Sexual violence,59.83
-"Per 100,000",Austria,AUT,2023,Sexual assault,30.81
-"Per 100,000",Finland,FIN,2008,Intentional homicide,3.02
-"Per 100,000",Finland,FIN,2008,Prison population,66.6
-"Per 100,000",Finland,FIN,2023,Intentional homicide,1.15
-"Per 100,000",Finland,FIN,2023,Prison population,53.24
-"Per 100,000",Finland,FIN,2023,Rape,43.42
-"Per 100,000",Finland,FIN,2023,Sexual violence,112.11
-"Per 100,000",Finland,FIN,2023,Sexual assault,68.69
-"Per 100,000",Sweden,SWE,2008,Intentional homicide,0.89
-"Per 100,000",Sweden,SWE,2008,Prison population,77.02
-"Per 100,000",Sweden,SWE,2023,Intentional homicide,1.15
-"Per 100,000",Sweden,SWE,2023,Prison population,92.65
-"Per 100,000",Sweden,SWE,2023,Rape,84.66
-"Per 100,000",Sweden,SWE,2023,Sexual violence,192.08
-"Per 100,000",Sweden,SWE,2023,Sexual assault,102.02
-"Per 100,000",Iceland,ISL,2008,Intentional homicide,0.0
-"Per 100,000",Iceland,ISL,2008,Prison population,44.38
-"Per 100,000",Iceland,ISL,2023,Intentional homicide,1.29
-"Per 100,000",Iceland,ISL,2023,Prison population,35.59
-"Per 100,000",Iceland,ISL,2023,Rape,45.39
-"Per 100,000",Iceland,ISL,2023,Sexual violence,129.98
-"Per 100,000",Iceland,ISL,2023,Sexual assault,18.05
-"Per 100,000",Norway,NOR,2008,Intentional homicide,0.72
-"Per 100,000",Norway,NOR,2008,Prison population,73.4
-"Per 100,000",Norway,NOR,2023,Intentional homicide,0.73
-"Per 100,000",Norway,NOR,2023,Prison population,62.53
-"Per 100,000",Norway,NOR,2023,Rape,42.36
-"Per 100,000",Norway,NOR,2023,Sexual violence,95.86
-"Per 100,000",Norway,NOR,2023,Sexual assault,45.36
-"Per 100,000",Switzerland,CHE,2008,Intentional homicide,0.71
-"Per 100,000",Switzerland,CHE,2008,Prison population,69.84
-"Per 100,000",Switzerland,CHE,2023,Intentional homicide,0.6
-"Per 100,000",Switzerland,CHE,2023,Prison population,75.2
-"Per 100,000",Switzerland,CHE,2023,Rape,9.52
-"Per 100,000",Switzerland,CHE,2023,Sexual violence,51.76
-"Per 100,000",Switzerland,CHE,2023,Sexual assault,7.67
+country,iso3,year,variable,value
+Denmark,DNK,2008,Intentional homicide,53.0
+Denmark,DNK,2008,Prison population,3451.0
+Denmark,DNK,2023,Intentional homicide,53.0
+Denmark,DNK,2023,Prison population,4154.0
+Denmark,DNK,2023,Rape,2375.0
+Denmark,DNK,2023,Sexual violence,6766.0
+Denmark,DNK,2023,Sexual assault,4391.0
+Netherlands,NLD,2008,Intentional homicide,150.0
+Netherlands,NLD,2008,Prison population,14610.0
+Netherlands,NLD,2023,Intentional homicide,125.0
+Netherlands,NLD,2023,Prison population,11681.0
+Netherlands,NLD,2023,Rape,2455.0
+Netherlands,NLD,2023,Sexual violence,5020.0
+Netherlands,NLD,2023,Sexual assault,2560.0
+Austria,AUT,2008,Intentional homicide,58.0
+Austria,AUT,2008,Prison population,8248.0
+Austria,AUT,2023,Intentional homicide,75.0
+Austria,AUT,2023,Prison population,9089.0
+Austria,AUT,2023,Rape,2328.0
+Austria,AUT,2023,Sexual violence,5447.0
+Austria,AUT,2023,Sexual assault,2805.0
+Finland,FIN,2008,Intentional homicide,160.0
+Finland,FIN,2008,Prison population,3530.0
+Finland,FIN,2023,Intentional homicide,64.0
+Finland,FIN,2023,Prison population,2962.0
+Finland,FIN,2023,Rape,2416.0
+Finland,FIN,2023,Sexual violence,6238.0
+Finland,FIN,2023,Sexual assault,3822.0
+Sweden,SWE,2008,Intentional homicide,82.0
+Sweden,SWE,2008,Prison population,7073.0
+Sweden,SWE,2023,Intentional homicide,121.0
+Sweden,SWE,2023,Prison population,9748.0
+Sweden,SWE,2023,Rape,8908.0
+Sweden,SWE,2023,Sexual violence,20210.0
+Sweden,SWE,2023,Sexual assault,10734.0
+Iceland,ISL,2008,Intentional homicide,0.0
+Iceland,ISL,2008,Prison population,140.0
+Iceland,ISL,2023,Intentional homicide,5.0
+Iceland,ISL,2023,Prison population,138.0
+Iceland,ISL,2023,Rape,176.0
+Iceland,ISL,2023,Sexual violence,504.0
+Iceland,ISL,2023,Sexual assault,70.0
+Norway,NOR,2008,Intentional homicide,34.0
+Norway,NOR,2008,Prison population,3477.0
+Norway,NOR,2023,Intentional homicide,40.0
+Norway,NOR,2023,Prison population,3432.0
+Norway,NOR,2023,Rape,2325.0
+Norway,NOR,2023,Sexual violence,5262.0
+Norway,NOR,2023,Sexual assault,2490.0
+Switzerland,CHE,2008,Intentional homicide,54.0
+Switzerland,CHE,2008,Prison population,5303.0
+Switzerland,CHE,2023,Intentional homicide,53.0
+Switzerland,CHE,2023,Prison population,6629.0
+Switzerland,CHE,2023,Rape,839.0
+Switzerland,CHE,2023,Sexual violence,4563.0
+Switzerland,CHE,2023,Sexual assault,676.0
